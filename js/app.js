@@ -22,6 +22,7 @@ createApp({
             })
             .catch((err)=>{
                 console.log(err)
+                alert('帳號或密碼錯誤')
             })
  
         }
