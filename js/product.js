@@ -28,7 +28,7 @@ createApp({
         getData(){
             axios.get(`${this.apiUrl}/api/${this.apiPath}/admin/products/all`)
             .then((res)=>{
-                console.log(res.data)
+                // console.log(res.data)
                 this.products = res.data.products;
 
             })
@@ -56,7 +56,7 @@ createApp({
             if(isEdit =='edit')
             {
                 this.temp  = {...product};
-                console.log(this.temp);
+                // console.log(this.temp);
                 this.isEdit = true;
                 productModal.show();
 
@@ -79,7 +79,7 @@ createApp({
                     productModal.hide();
                 })
                 .catch((err)=>{
-                    console.dir(err.message)
+                    // console.dir(err.message)
                 })
             }else{
                 axios.post(`${this.apiUrl}/api/${this.apiPath}/admin/product`, { data: this.temp })
@@ -112,7 +112,7 @@ createApp({
 
             })
             .catch((err)=>{
-                console.log(err)
+                // console.log(err)
             })
         }
     },
