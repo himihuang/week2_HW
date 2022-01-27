@@ -9,8 +9,10 @@ createApp({
             apiUrl: 'https://vue3-course-api.hexschool.io/v2',
             apiPath: 'himiapi',
             products: [],
-            temp: {},
-            isEdit: false
+            temp: {
+                imagesUrl:[]
+            },
+            isEdit: false,
         }
     },
     methods: {
@@ -26,7 +28,7 @@ createApp({
         getData(){
             axios.get(`${this.apiUrl}/api/${this.apiPath}/admin/products/all`)
             .then((res)=>{
-                // console.log(res.data)
+                console.log(res.data)
                 this.products = res.data.products;
 
             })
@@ -54,11 +56,13 @@ createApp({
             if(isEdit =='edit')
             {
                 this.temp  = {...product};
+                console.log(this.temp);
                 this.isEdit = true;
                 productModal.show();
 
             }else{
-                this.temp = { };
+               
+                this.temp = { imagesUrl:[] };
                 this.isEdit = false;
                 productModal.show();
             }
@@ -69,28 +73,47 @@ createApp({
         saveProduct(){
 
             if(this.isEdit){
-                axios.put(`${this.apiUrl}/api/${this.apiPath}/admin/product/${this.temp.id}`)
+                axios.put(`${this.apiUrl}/api/${this.apiPath}/admin/product/${this.temp.id}`, { data: this.temp })
                 .then((res)=>{
-                    console.log(res)
+                    this.getData();
                     productModal.hide();
                 })
                 .catch((err)=>{
-                    console.log(err)
+                    console.dir(err.message)
                 })
             }else{
-                console.log(typeof this.temp.price);
-                console.log(this.products)
                 axios.post(`${this.apiUrl}/api/${this.apiPath}/admin/product`, { data: this.temp })
                 .then((res)=>{
-                    console.log('res',res.data.message)
+                    
                     this.getData();
                     productModal.hide();
 
                 })
                 .catch((err)=>{
-                    console.log('err',err.data.message)
                 })
             }
+        },
+        uploadImages(e){
+            let file  = e.target.files[0];
+            let formData = new FormData();
+            formData.append('file-to-upload', file)
+            let vm = this;
+            axios.post(`${this.apiUrl}/api/${this.apiPath}/admin/upload`, formData)
+            .then((res)=>{
+                if(!this.temp.imageUrl){
+                    this.temp.imageUrl = res.data.imageUrl
+                }
+                else{
+                    this.temp.imagesUrl.push(res.data.imageUrl)
+
+                }
+          
+
+
+            })
+            .catch((err)=>{
+                console.log(err)
+            })
         }
     },
     created() {
@@ -103,9 +126,6 @@ createApp({
     },
     mounted() {
         productModal = new bootstrap.Modal(document.getElementById('productModal'))
-
     },
-    updated(){
-        this.getData()
-    }
+
 }).mount('#app');

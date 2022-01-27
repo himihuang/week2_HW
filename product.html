@@ -39,7 +39,7 @@
         font-weight: 400;
       }
 
-      .cus-table td{
+      .cus-table tr{
         color: #666;
         font-size: .9rem;
         background-color: #fff;
@@ -47,6 +47,10 @@
 
       .cus-bg-primary{
         background-color: #7ba9b1;
+      }
+
+      .bg-noEnabled{
+        background-color: #f0f3f3!important;
       }
       /* ----image---- */
 
@@ -103,7 +107,16 @@
         background-color: #7ba9b1;
         color: #fff;
       }
+
+      /* ----modal---- */
+
+      .modal-header{
+        background-color: #fcfcfc;
+      }
       
+      .img-group img{
+        width: 25%;
+      }
 
     </style>
   </head>
@@ -111,28 +124,30 @@
     <div id="app">
       <!-- productModal -->
       <div class="modal" tabindex="-1" id="productModal">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-md">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Modal title</h5>
+              <h5 class="modal-title" v-show="isEdit">編輯產品</h5>
+              <h5 class="modal-title" v-show="!isEdit">新增產品</h5>
+
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               <div class="row">
-                <div class="col-12 col-sm-8">
-                  <div class="form-group">
+                <div class="col-12">
+                  <div class="form-group mb-3">
                     <label for="title" class="form-label">標題</label>
                     <input type="text" class="form-control" id="title" v-model="temp.title">
                   </div>
                   <div class="row">
                     <div class="col-12 col-sm-6">
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <label for="category" class="form-label">分類</label>
                         <input type="text" class="form-control" id="category" v-model="temp.category">
                       </div>
                     </div>
                     <div class="col-12 col-sm-6">
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <label for="unit" class="form-label">單位</label>
                         <input type="text" class="form-control" id="unit" v-model="temp.unit">
                       </div>
@@ -141,7 +156,7 @@
 
                   <div class="row">
                     <div class="col-12 col-sm-6">
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <label for="origin_price" class="form-label">原價</label>
                         <input type="number" class="form-control" id="origin_price" v-model.number="temp.origin_price">
                       </div>
@@ -150,7 +165,7 @@
                     </div>
                     <div class="col-12 col-sm-6">
 
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <label for="price" class="form-label">售價</label>
                         <input type="number" class="form-control" id="price" v-model.number="temp.price">
                       </div>
@@ -160,7 +175,7 @@
 
                   <div class="row">
                     <div class="col-12">
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <label for="des">產品描述</label>
                         <textarea 
                         name="des" type="text" 
@@ -177,7 +192,7 @@
 
                   <div class="row">
                     <div class="col-12">
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <label for="content">說明內容</label>
                         <textarea 
                         name="content" type="text" 
@@ -193,43 +208,57 @@
 
                   <div class="row">
                     <div class="col-12">
-                      <div class="form-group">
+                      <div class="form-group mb-3">
                         <input 
                         type="checkbox" 
-                        id="isOpen" v-model="
-                        temp.is_enabled">
-                        <label for="isOpen">是否啟用</label>
+                        id="isOpen" 
+                        v-model="temp.is_enabled"
+                        :checked="temp.is_enabled?'1':'0'"
+                        :value="temp.is_enabled">
+                        <label for="isOpen" class="ms-2">是否啟用</label>
     
                       </div>
                     </div>
                   </div>
 
+                  <div class="form-group mb-3">
+
+                    <input type="file" id="upload" class="form-control" @change="uploadImages($event)" >
+
+                  </div>
+                  <img :src="temp.imageUrl" class="img-fluid" alt="">
+                  <div class="img-group d-flex flex-row flex-wrap" >
+                    <img v-for="img in temp.imagesUrl" :src="img" alt="" class="img-fluid">
+                  </div>
+
                 </div>
 
-                <div class="col-12 col-sm-4">
-                  
-                </div>
+
               </div>
               
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" @click="saveProduct">儲存</button>
+              <button type="button" class="btn cus-btn-outline-primary" data-bs-dismiss="modal">取消</button>
+              <button type="button" class="btn cus-btn-primary" @click="saveProduct">儲存</button>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- productList -->
       <div class="container">
         <div class="row py-3">
           <div class="col-12">
-            <h4 class="title">產品列表</h4>
-            <button
-            type="button"
-            class="btn cus-btn-primary" 
-            @click="toggleModal('add')">
-            新增商品
-          </button>
+            <div class="d-flex justify-content-between">
+
+              <h4 class="title">產品列表</h4>
+              <button
+              type="button"
+              class="btn cus-btn-primary mb-3" 
+              @click="toggleModal('add')">
+              新增商品
+            </button>
+            </div>
             <table class="table cus-table">
               <thead>
                 <tr>
@@ -243,7 +272,7 @@
               </thead>
 
               <tbody>
-                <tr v-for="product in products" :key="product.id">
+                <tr v-for="product in products" :key="product.id" :class="{'bg-noEnabled':!product.is_enabled}">
                   <td>{{product.title}}</td>
                   <td>{{product.origin_price}}</td>
                   <td>{{product.price}}</td>
