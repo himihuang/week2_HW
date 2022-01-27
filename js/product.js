@@ -23,6 +23,7 @@ createApp({
             })
             .catch((err)=>{
                 // console.log(err)
+                window.location = 'index.html'
             })
         },
         getData(){
