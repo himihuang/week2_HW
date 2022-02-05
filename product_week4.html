@@ -118,12 +118,18 @@
         width: 25%;
       }
 
+       /* ----pagination---- */
+      .page-item.active .page-link{
+          background-color: #7ba9b1;
+          border-color: #7ba9b1;
+      }
+
     </style>
   </head>
   <body>
     <div id="app">
       <!-- start productModal -->
-      <div class="modal" tabindex="-1" id="productModal">
+      <!-- <div class="modal" tabindex="-1" id="productModal">
         <div class="modal-dialog modal-md">
           <div class="modal-content">
             <div class="modal-header">
@@ -243,10 +249,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      
-
+      <show-modal :temp="temp" :is-edit="isEdit" @save-data="getData"></show-modal>
+      <del-modal @del-product="delItem"></del-modal>
       <!-- end productModal -->
 
       <!-- productList -->
@@ -295,12 +301,14 @@
                     <button
                     type="button"
                     class='btn cus-btn-outline-primary'
-                    @click="delItem(product.id)"
+                    @click="toggleDelModal('edit', product)"
                     >刪除</button>
                 </td>
                 </tr>
               </tbody>
             </table>
+
+            <pagination :pages="pagination" @change-page="getData"></pagination>
           </div>
 
           <!-- <div class="col-12">
@@ -381,7 +389,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <script type="module" src="./js/product.js">
+    <script type="module" src="./js/product_week4.js">
 
     </script>
   </body>

@@ -1,9 +1,10 @@
+console.log('123')
+
 import {createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.9/vue.esm-browser.js'
 
 let productModal = '';
 
-createApp({
-
+const app = createApp({
     data(){
         return{
             apiUrl: 'https://vue3-course-api.hexschool.io/v2',
@@ -20,6 +21,7 @@ createApp({
             axios.post(`${this.apiUrl}/api/user/check`)
             .then((res)=>{
                 // console.log(res)
+                this.getData()
             })
             .catch((err)=>{
                 // console.log(err)
@@ -44,7 +46,7 @@ createApp({
             axios.delete(`${this.apiUrl}/api/${this.apiPath}/admin/product/${product}`)
             .then((res)=>{
                 // console.log(res)
-                this.products = res.data.products;
+                this.getData();
 
             })
             .catch((err)=>{
@@ -53,16 +55,17 @@ createApp({
         },
         toggleModal(isEdit,product){
            
-
             if(isEdit =='edit')
             {
+                this.isEdit = true;
                 this.temp  = {...product};
                 // console.log(this.temp);
-                this.isEdit = true;
                 productModal.show();
+                console.log('edit',this.isEdit)
 
             }else{
-               
+                console.log('Noedit',this.isEdit)
+
                 this.temp = { imagesUrl:[] };
                 this.isEdit = false;
                 productModal.show();
@@ -122,11 +125,18 @@ createApp({
         axios.defaults.headers.common['Authorization'] = token;
 
         this.checkLogin();
-        this.getData()
+        
 
     },
     mounted() {
         productModal = new bootstrap.Modal(document.getElementById('productModal'))
     },
 
-}).mount('#app');
+})
+
+
+
+
+app.mount('#app');
+
+console.log('456')
