@@ -1,5 +1,6 @@
 
 import {createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.9/vue.esm-browser.js'
+import pagination from './pagination.js'
 
 let productModal = '';
 let delModal = '';
@@ -16,6 +17,9 @@ const app = createApp({
             isEdit: false,
             pagination: {}
         }
+    },
+    components:{
+      pagination
     },
     methods: {
         checkLogin(){
@@ -113,30 +117,30 @@ const app = createApp({
 })
 
 
-app.component('pagination',{
-    props: ['pages'],
-    template:`
+// app.component('pagination',{
+//     props: ['pages'],
+//     template:`
     
-    <nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    <li class="page-item" :class="{disabled: !pages.has_next}">
-      <a class="page-link" href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li class="page-item" v-for="page in pages.total_pages" :key="page"  :class="{active: page == pages.current_page}">
-        <a class="page-link" href="#" @click="$emit('change-page', page)">{{page}}</a>
-    </li>
+//     <nav aria-label="Page navigation example">
+//   <ul class="pagination justify-content-center">
+//     <li class="page-item" :class="{disabled: !pages.has_next}">
+//       <a class="page-link" href="#" aria-label="Previous">
+//         <span aria-hidden="true">&laquo;</span>
+//       </a>
+//     </li>
+//     <li class="page-item" v-for="page in pages.total_pages" :key="page"  :class="{active: page == pages.current_page}">
+//         <a class="page-link" href="#" @click="$emit('change-page', page)">{{page}}</a>
+//     </li>
 
-    <li class="page-item" :class="{disabled: !pages.has_pre}">
-      <a class="page-link" href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-    `
-})
+//     <li class="page-item" :class="{disabled: !pages.has_pre}">
+//       <a class="page-link" href="#" aria-label="Next">
+//         <span aria-hidden="true">&raquo;</span>
+//       </a>
+//     </li>
+//   </ul>
+// </nav>
+//     `
+// })
 
 
 app.component('showModal',{
