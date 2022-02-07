@@ -62,7 +62,7 @@ const app = createApp({
             if(isEdit =='edit')
             {
                 this.isEdit = true;
-                this.temp  = {...product};
+                this.temp  = JSON.parse(JSON.stringify(product))
                 delModal.show();
             }else{
                 this.isEdit = false;
@@ -76,7 +76,12 @@ const app = createApp({
             if(isEdit =='edit')
             {
                 this.isEdit = true;
-                this.temp  = {...product};
+                this.temp  = JSON.parse(JSON.stringify(product))
+                if(!this.temp.imagesUrl){
+                  this.temp.imagesUrl = []
+                }else if(!this.temp.imageUrl){
+                  this.temp.imageUrl = ''
+                }
                 productModal.show();
 
             }else{
@@ -89,26 +94,7 @@ const app = createApp({
           
         },
        
-        uploadImages(e){
-            let file  = e.target.files[0];
-            let formData = new FormData();
-            formData.append('file-to-upload', file)
-            let vm = this;
-            axios.post(`${this.apiUrl}/api/${this.apiPath}/admin/upload`, formData)
-            .then((res)=>{
-                if(!this.temp.imageUrl){
-                    this.temp.imageUrl = res.data.imageUrl
-                }
-                else{
-                    this.temp.imagesUrl.push(res.data.imageUrl)
-
-                }
-          
-            })
-            .catch((err)=>{
-                // console.log(err)
-            })
-        }
+       
     },
     created() {
         const token = document.cookie.replace(/(?:(?:^|.*;\s*)himitoken\s*\=\s*([^;]*).*$)|^.*$/, "$1");
@@ -158,6 +144,7 @@ app.component('showModal',{
         return{
             apiUrl: 'https://vue3-course-api.hexschool.io/v2',
             apiPath: 'himiapi',
+            tempImg: ''
         }
     },
     props: ['temp','isEdit'],
@@ -186,6 +173,40 @@ app.component('showModal',{
                 })
             }
         },
+        uploadImages(e){
+            let file  = e.target.files[0];
+            let formData = new FormData();
+            formData.append('file-to-upload', file)
+            let vm = this;
+            axios.post(`${this.apiUrl}/api/${this.apiPath}/admin/upload`, formData)
+            .then((res)=>{
+                if(!this.temp.imageUrl){
+                    this.temp.imageUrl = res.data.imageUrl
+                }
+                else{
+                    this.temp.imagesUrl.push(res.data.imageUrl)
+
+                }
+          
+            })
+            .catch((err)=>{
+                // console.log(err)
+            })
+        },
+        addImages(){
+          if(this.tempImg!==''){
+            console.log(123)
+            this.temp.imagesUrl.push(this.tempImg)
+            console.log(this.temp.imagesUrl)
+            this.tempImg  = ''
+          }else{
+            return
+          }
+
+        }
+    },
+    mounted(){
+      
     },
     template:` 
     <div class="modal" tabindex="-1" id="productModal">
@@ -225,11 +246,9 @@ app.component('showModal',{
                     <label for="origin_price" class="form-label">原價</label>
                     <input type="number" class="form-control" id="origin_price" v-model.number="temp.origin_price">
                   </div>
-                
-
                 </div>
-                <div class="col-12 col-sm-6">
 
+                <div class="col-12 col-sm-6">
                   <div class="form-group mb-3">
                     <label for="price" class="form-label">售價</label>
                     <input type="number" class="form-control" id="price" v-model.number="temp.price">
@@ -258,7 +277,7 @@ app.component('showModal',{
               <div class="row">
                 <div class="col-12">
                   <div class="form-group mb-3">
-                    <label for="content">說明內容</label>
+                    <label for="content" class="form-label">說明內容</label>
                     <textarea 
                     name="content" type="text" 
                     id="content" class="form-control"
@@ -278,8 +297,8 @@ app.component('showModal',{
                     type="checkbox" 
                     id="isOpen" 
                     v-model="temp.is_enabled"
-                    :checked="temp.is_enabled?'1':'0'"
-                    :value="temp.is_enabled">
+                    :true-value="1"
+                    :false-value="0">
                     <label for="isOpen" class="ms-2">是否啟用</label>
 
                   </div>
@@ -287,13 +306,22 @@ app.component('showModal',{
               </div>
 
               <div class="form-group mb-3">
-
-                <input type="file" id="upload" class="form-control" @change="uploadImages($event)" >
-
+                <label class="form-label">主圖</label>
+                <input type="text" id="upload" class="form-control mb-3" v-model="temp.imageUrl">
               </div>
-              <img :src="temp.imageUrl" class="img-fluid" alt="">
-              <div class="img-group d-flex flex-row flex-wrap" >
-                <img v-for="img in temp.imagesUrl" :src="img" alt="" class="img-fluid">
+              <img :src="temp.imageUrl" class="img-fluid mb-3" alt="">
+
+              <div class="img-group d-flex flex-row flex-wrap">
+                <label class="form-label">多圖</label>
+                <input type="text" class="form-control mb-3" v-model="tempImg">
+                <template v-for="(img,index) in temp.imagesUrl" :key="index+'123'">
+                  
+                  <img :src="temp.imagesUrl[index]" alt="" class="img-fluid mb-3">
+                </template>
+                <button type="button" class="btn cus-btn-primary w-100 mb-3" @click="addImages">新增</button>
+                <button type="button" class="btn cus-btn-outline-primary w-100 mb-3" @click="temp.imagesUrl.pop()">刪除</button>
+
+          
               </div>
 
             </div>
