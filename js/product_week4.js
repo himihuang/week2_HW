@@ -199,9 +199,8 @@ app.component('showModal',{
         },
         addImages(){
           if(this.tempImg!==''){
-            console.log(123)
             this.temp.imagesUrl.push(this.tempImg)
-            console.log(this.temp.imagesUrl)
+            // console.log(this.temp.imagesUrl)
             this.tempImg  = ''
           }else{
             return
@@ -365,4 +364,3 @@ app.component('delModal',{
 })
 app.mount('#app');
 
-console.log('456')
